@@ -1,20 +1,23 @@
+import { Route, Routes } from "react-router";
+
+import AppLayout from "./layouts/AppLayout";
+
+import DashboardPage from "./pages/DashboardPage";
+import TransactionsPage from "./pages/TransactionsPage";
+import ReportsPage from "./pages/ReportsPage";
+import NotFoundPage from "./pages/NotFoundPage";
+
 function App() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
-      <section className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-slate-900">
-          Welcome to Expense Tracker
-        </h1>
+    <Routes>
+      <Route path="/" element={<AppLayout />}>
+        <Route index element={<DashboardPage />} />
+        <Route path="transactions" element={<TransactionsPage />} />
+        <Route path="reports" element={<ReportsPage />} />
+      </Route>
 
-        <p className="mt-2 text-slate-600">
-          Your personal finance application is being prepared.
-        </p>
-
-        <p className="mt-4 w-fit rounded-md bg-green-100 px-3 py-2 text-sm font-medium text-green-700">
-          Tailwind CSS is working!
-        </p>
-      </section>
-    </main>
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
 }
 
