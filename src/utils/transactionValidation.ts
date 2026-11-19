@@ -1,5 +1,5 @@
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "../constants/categories";
-import type { Transaction } from "../types/transaction";
+import type { ExpenseCategory, IncomeCategory, Transaction } from "../types/transaction";
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -49,12 +49,8 @@ export function isTransaction(value: unknown): value is Transaction {
 
   const isDescriptionValid = typeof value.description === "string";
 
-  const datePattern = /^\d{4}-\d{2}-\d{2}$/;
   const isDateValid =
-    typeof value.date === "string" &&
-    datePattern.test(value.date) &&
-    isValidCalendarDate(value.date) &&
-    isTodayOrEarlier(value.date);
+    typeof value.date === "string" && isValidTransactionDate(value.date);
 
   const isTypeValid = value.type === "income" || value.type === "expense";
 
@@ -75,4 +71,24 @@ export function isTransaction(value: unknown): value is Transaction {
     return false;
 
   return true;
+}
+
+export function isValidTransactionDate(date: string): boolean {
+  const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+
+  return (
+    datePattern.test(date) &&
+    isValidCalendarDate(date) &&
+    isTodayOrEarlier(date)
+  );
+}
+
+export function isIncomeCategory(value: string): value is IncomeCategory {
+  const categories: readonly string[] = INCOME_CATEGORIES;
+  return categories.includes(value);
+}
+
+export function isExpenseCategory(value: string): value is ExpenseCategory {
+  const categories: readonly string[] = EXPENSE_CATEGORIES;
+  return categories.includes(value);
 }
