@@ -3,11 +3,20 @@ import { Outlet } from "react-router";
 
 import Navigation from "../components/Navigation";
 import TransactionModal from "../components/TransactionModal";
+import type { Transaction } from "../types/transaction";
 
 function AppLayout() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] =
+    useState<Transaction | null>(null);
 
   function openTransactionModal() {
+    setEditingTransaction(null);
+    setIsModalOpen(true);
+  }
+
+  function openEditTransactionModal(transaction: Transaction) {
+    setEditingTransaction(transaction);
     setIsModalOpen(true);
   }
 
@@ -23,11 +32,18 @@ function AppLayout() {
         <Navigation />
 
         <main className="min-w-0 pb-20 lg:pb-0">
-          <Outlet context={{ openTransactionModal }} />
+          <Outlet
+            context={{ openTransactionModal, openEditTransactionModal }}
+          />
         </main>
       </div>
 
-      <TransactionModal isOpen={isModalOpen} onClose={closeTransactionModal} />
+      {isModalOpen && (
+        <TransactionModal
+          onClose={closeTransactionModal}
+          editingTransaction={editingTransaction}
+        />
+      )}
     </div>
   );
 }

@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import type { MouseEvent, FormEvent, SyntheticEvent } from "react";
-import type { NewTransaction, TransactionType } from "../types/transaction";
+import type {
+  NewTransaction,
+  TransactionType,
+  Transaction,
+} from "../types/transaction";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "../constants/categories";
 import { getTodayDate } from "../utils/date";
 import { isValidAmount, parseAmountToCents } from "../utils/amount";
@@ -13,33 +17,53 @@ import useTransactions from "../hooks/useTransactions";
 
 interface TransactionModalProps {
   onClose: () => void;
-  isOpen: boolean;
+  editingTransaction: Transaction | null;
 }
 
-function TransactionModal({ onClose, isOpen }: TransactionModalProps) {
+function TransactionModal({
+  onClose,
+  editingTransaction,
+}: TransactionModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const [description, setDescription] = useState("");
-  const [type, setType] = useState<TransactionType>("expense");
-  const [category, setCategory] = useState("");
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState(getTodayDate);
+  const [description, setDescription] = useState(
+    editingTransaction?.description ?? "",
+  );
+
+  const [type, setType] = useState<TransactionType>(
+    editingTransaction?.type ?? "expense",
+  );
+
+  const [category, setCategory] = useState(editingTransaction?.category ?? "");
+
+  const [amount, setAmount] = useState(
+    editingTransaction ? String(editingTransaction.amountCents / 100) : "",
+  );
+
+  const [date, setDate] = useState(
+    () => editingTransaction?.date ?? getTodayDate(),
+  );
 
   const [amountError, setAmountError] = useState("");
   const [categoryError, setCategoryError] = useState("");
   const [dateError, setDateError] = useState("");
 
-  const { addTransaction } = useTransactions();
+  const { addTransaction, updateTransaction } = useTransactions();
 
   const availableCategories =
     type === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
 
-  const hasUnsavedChanges =
-    type !== "expense" ||
-    category !== "" ||
-    amount !== "" ||
-    description !== "" ||
-    date !== getTodayDate();
+  const hasUnsavedChanges = editingTransaction
+    ? description !== editingTransaction.description ||
+      type !== editingTransaction.type ||
+      category !== editingTransaction.category ||
+      amount !== String(editingTransaction.amountCents / 100) ||
+      date !== editingTransaction.date
+    : description !== "" ||
+      type !== "expense" ||
+      category !== "" ||
+      amount !== "" ||
+      date !== getTodayDate();
 
   const categoryRef = useRef<HTMLSelectElement>(null);
   const amountRef = useRef<HTMLInputElement>(null);
@@ -50,12 +74,10 @@ function TransactionModal({ onClose, isOpen }: TransactionModalProps) {
 
     if (!dialog) return;
 
-    if (isOpen && !dialog.open) {
+    if (!dialog.open) {
       dialog.showModal();
-    } else if (!isOpen && dialog.open) {
-      dialog.close();
     }
-  }, [isOpen]);
+  }, []);
 
   function handleRequestClose() {
     if (
@@ -65,7 +87,6 @@ function TransactionModal({ onClose, isOpen }: TransactionModalProps) {
       return;
     }
 
-    resetForm();
     onClose();
   }
 
@@ -150,20 +171,16 @@ function TransactionModal({ onClose, isOpen }: TransactionModalProps) {
       };
     }
 
-    addTransaction(newTransaction);
-    resetForm();
-    onClose();
-  }
+    if (editingTransaction) {
+      updateTransaction({
+        ...newTransaction,
+        id: editingTransaction.id,
+      });
+    } else {
+      addTransaction(newTransaction);
+    }
 
-  function resetForm() {
-    setDescription("");
-    setType("expense");
-    setCategory("");
-    setAmount("");
-    setDate(getTodayDate());
-    setCategoryError("");
-    setAmountError("");
-    setDateError("");
+    onClose();
   }
 
   return (
@@ -179,7 +196,7 @@ function TransactionModal({ onClose, isOpen }: TransactionModalProps) {
         id="transaction-modal-title"
         className="text-xl font-semibold text-slate-900"
       >
-        Add Transaction
+        {editingTransaction ? "Edit Transaction" : "Add Transaction"}
       </h2>
 
       <form onSubmit={handleSubmit} noValidate>
@@ -340,7 +357,9 @@ function TransactionModal({ onClose, isOpen }: TransactionModalProps) {
           Close
         </button>
 
-        <button type="submit">Save Transaction</button>
+        <button type="submit">
+          {editingTransaction ? "Save Changes" : "Save Transaction"}
+        </button>
       </form>
     </dialog>
   );
