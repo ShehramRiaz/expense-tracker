@@ -4,9 +4,26 @@ import type { AppOutletContext } from "../types/app";
 
 import RecentTransactions from "../components/RecentTransactions";
 import SummaryCard from "../components/SummaryCard";
+import useTransactions from "../hooks/useTransactions";
+import { formatCurrency } from "../utils/currency";
 
 function DashboardPage() {
   const { openTransactionModal } = useOutletContext<AppOutletContext>();
+  const { transactions } = useTransactions();
+
+  const totalIncomeCents = transactions.reduce((acc, curr) => {
+    return curr.type === "income" ? acc + curr.amountCents : acc;
+  }, 0);
+
+  const totalExpenseCents = transactions.reduce((acc, curr) => {
+    return curr.type === "expense" ? acc + curr.amountCents : acc;
+  }, 0);
+
+  const balanceCents = totalIncomeCents - totalExpenseCents;
+
+  const recentTransactions = [...transactions]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 5);
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-6 lg:px-8 lg:py-8">
@@ -31,12 +48,25 @@ function DashboardPage() {
         aria-label="Financial summary"
         className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
       >
-        <SummaryCard title="Total Balance" amount="$0.00" variant="neutral" />
-        <SummaryCard title="Total Income" amount="$0.00" variant="income" />
-        <SummaryCard title="Total Expenses" amount="$0.00" variant="expense" />
+        <SummaryCard
+          title="Total Balance"
+          amount={formatCurrency(balanceCents)}
+          variant="neutral"
+          isNegative={balanceCents < 0}
+        />
+        <SummaryCard
+          title="Total Income"
+          amount={formatCurrency(totalIncomeCents)}
+          variant="income"
+        />
+        <SummaryCard
+          title="Total Expenses"
+          amount={formatCurrency(totalExpenseCents)}
+          variant="expense"
+        />
       </section>
 
-      <RecentTransactions />
+      <RecentTransactions transactions={recentTransactions} />
     </div>
   );
 }

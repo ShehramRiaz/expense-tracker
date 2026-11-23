@@ -2,6 +2,7 @@ interface SummaryCardProps {
   title: string;
   amount: string;
   variant: "neutral" | "income" | "expense";
+  isNegative?: boolean;
 }
 
 const amountColors = {
@@ -16,13 +17,13 @@ const accentColors = {
   expense: "bg-red-600",
 };
 
-function SummaryCard({ title, amount, variant }: SummaryCardProps) {
+function SummaryCard({ title, amount, variant, isNegative }: SummaryCardProps) {
+  const amountColor = isNegative ? "text-red-700" : amountColors[variant];
+
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5">
       <p className="text-sm font-medium text-slate-600">{title}</p>
-      <p
-        className={`mt-2 text-2xl font-bold tabular-nums ${amountColors[variant]}`}
-      >
+      <p className={`mt-2 text-2xl font-bold tabular-nums ${amountColor}`}>
         {amount}
       </p>
 
