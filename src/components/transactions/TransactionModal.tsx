@@ -4,16 +4,16 @@ import type {
   NewTransaction,
   TransactionType,
   Transaction,
-} from "../types/transaction";
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "../constants/categories";
-import { getTodayDate } from "../utils/date";
-import { isValidAmount, parseAmountToCents } from "../utils/amount";
+} from "../../types/transaction";
+import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "../../constants/categories";
+import { getTodayDate } from "../../utils/date";
+import { isValidAmount, parseAmountToCents } from "../../utils/amount";
 import {
   isExpenseCategory,
   isIncomeCategory,
   isValidTransactionDate,
-} from "../utils/transactionValidation";
-import useTransactions from "../hooks/useTransactions";
+} from "../../utils/transactionValidation";
+import useTransactions from "../../hooks/useTransactions";
 
 interface TransactionModalProps {
   onClose: () => void;
@@ -171,22 +171,24 @@ function TransactionModal({
       };
     }
 
+    let saved: boolean;
+
     if (editingTransaction) {
-      updateTransaction({
+      saved = updateTransaction({
         ...newTransaction,
         id: editingTransaction.id,
       });
     } else {
-      addTransaction(newTransaction);
+      saved = addTransaction(newTransaction);
     }
 
-    onClose();
+    if (saved) onClose();
   }
 
   return (
     <dialog
       aria-labelledby="transaction-modal-title"
-      className="w-[calc(100%-2rem)] max-w-md rounded-xl bg-white p-6 shadow-xl backdrop:bg-slate-900/50"
+      className="fixed inset-auto top-1/2 left-1/2 m-0 max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl bg-white p-6 shadow-xl backdrop:bg-slate-900/50"
       ref={dialogRef}
       onCancel={handleCancel}
       onClose={onClose}
@@ -199,14 +201,19 @@ function TransactionModal({
         {editingTransaction ? "Edit Transaction" : "Add Transaction"}
       </h2>
 
-      <form onSubmit={handleSubmit} noValidate>
-        <label htmlFor="transaction-description">Description (optional)</label>
+      <form onSubmit={handleSubmit} noValidate className="mt-5">
+        <label
+          htmlFor="transaction-description"
+          className="block text-sm font-medium text-slate-700"
+        >
+          Description (optional)
+        </label>
         <input
           type="text"
           id="transaction-description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
           autoFocus
         />
 
@@ -302,7 +309,7 @@ function TransactionModal({
             setAmount(event.target.value);
             setAmountError("");
           }}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
           aria-invalid={Boolean(amountError)}
           aria-describedby={
             amountError ? "transaction-amount-error" : undefined
@@ -333,7 +340,7 @@ function TransactionModal({
             setDate(event.target.value);
             setDateError("");
           }}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
           max={getTodayDate()}
           aria-invalid={Boolean(dateError)}
           aria-describedby={dateError ? "transaction-date-error" : undefined}
@@ -349,17 +356,22 @@ function TransactionModal({
           </p>
         )}
 
-        <button
-          type="button"
-          onClick={handleRequestClose}
-          className="mt-3 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
-        >
-          Close
-        </button>
+        <div className="mt-6 flex flex-wrap items-center justify-end gap-3">
+          <button
+            type="button"
+            onClick={handleRequestClose}
+            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+          >
+            Close
+          </button>
 
-        <button type="submit">
-          {editingTransaction ? "Save Changes" : "Save Transaction"}
-        </button>
+          <button
+            type="submit"
+            className="rounded-lg bg-sky-700 px-4 py-2 text-sm font-medium text-white hover:bg-sky-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+          >
+            {editingTransaction ? "Save Changes" : "Save Transaction"}
+          </button>
+        </div>
       </form>
     </dialog>
   );

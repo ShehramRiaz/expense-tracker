@@ -23,7 +23,7 @@ function SummaryCard({ title, amount, variant, isNegative }: SummaryCardProps) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5">
       <p className="text-sm font-medium text-slate-600">{title}</p>
-      <p className={`mt-2 text-2xl font-bold tabular-nums ${amountColor}`}>
+      <p className={`mt-2 break-all text-2xl font-bold tabular-nums ${amountColor}`}>
         {amount}
       </p>
 

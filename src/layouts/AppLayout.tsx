@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Outlet } from "react-router";
 
-import Navigation from "../components/Navigation";
-import TransactionModal from "../components/TransactionModal";
+import Navigation from "../components/layout/Navigation";
+import TransactionModal from "../components/transactions/TransactionModal";
 import type { Transaction } from "../types/transaction";
 
 function AppLayout() {
@@ -25,18 +25,39 @@ function AppLayout() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="w-full">Expense Tracker</header>
+    <div className="min-h-dvh bg-slate-50">
+      <header className="sticky top-0 z-40 flex h-16 items-center border-b border-slate-200 bg-white px-4 sm:px-6">
+        <div className="flex items-center gap-3">
+          <span
+            aria-hidden="true"
+            className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-700 text-white shadow-sm"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-5 w-5"
+            >
+              <rect x="3" y="5" width="18" height="15" rx="2" />
+              <path d="M3 10h18M16 15h2" />
+            </svg>
+          </span>
+          <span className="text-lg font-bold tracking-tight text-slate-900">
+            Expense Tracker
+          </span>
+        </div>
+      </header>
 
-      <div className="grid flex-1 lg:grid-cols-[16rem_minmax(0,1fr)]">
-        <Navigation />
+      <Navigation />
 
-        <main className="min-w-0 pb-20 lg:pb-0">
-          <Outlet
-            context={{ openTransactionModal, openEditTransactionModal }}
-          />
-        </main>
-      </div>
+      <main className="min-w-0 pb-24 lg:ml-64 lg:pb-0">
+        <Outlet
+          context={{ openTransactionModal, openEditTransactionModal }}
+        />
+      </main>
 
       {isModalOpen && (
         <TransactionModal

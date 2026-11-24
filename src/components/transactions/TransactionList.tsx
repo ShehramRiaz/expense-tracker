@@ -16,7 +16,7 @@ function TransactionList({
   return (
     <>
       <div className="md:hidden">
-        <ul className="mt-4 space-y-2">
+        <ul className="space-y-2">
           {transactions.map((transaction) => (
             <TransactionCard
               key={transaction.id}

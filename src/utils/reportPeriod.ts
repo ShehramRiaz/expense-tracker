@@ -1,5 +1,10 @@
 import { getTodayDate } from "./date";
 
+const reportMonthFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  year: "numeric",
+});
+
 export function getCurrentMonth() {
   return getTodayDate().slice(0, 7);
 }
@@ -25,8 +30,5 @@ export function formatReportMonth(month: string): string {
 
   const date = new Date(year, monthNumber - 1, 1);
 
-  return new Intl.DateTimeFormat("en-US", {
-    month: "long",
-    year: "numeric",
-  }).format(date);
+  return reportMonthFormatter.format(date);
 }

@@ -1,8 +1,8 @@
 import type { Transaction, NewTransaction } from "./transaction";
 
 export interface TransactionContextValue {
-  transactions: Transaction[];
-  addTransaction: (transaction: NewTransaction) => void;
-  updateTransaction: (transaction: Transaction) => void;
-  deleteTransaction: (id: string) => void;
+  transactions: readonly Transaction[];
+  addTransaction: (transaction: NewTransaction) => boolean;
+  updateTransaction: (transaction: Transaction) => boolean;
+  deleteTransaction: (id: string) => boolean;
 }

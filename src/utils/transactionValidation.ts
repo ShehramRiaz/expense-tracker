@@ -1,9 +1,12 @@
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "../constants/categories";
+import { getTodayDate } from "./date";
 import type { ExpenseCategory, IncomeCategory, Transaction } from "../types/transaction";
 
-export function isRecord(value: unknown): value is Record<string, unknown> {
+function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
+
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 function isValidCalendarDate(date: string) {
   const [year, month, day] = date.split("-").map(Number);
@@ -19,15 +22,7 @@ function isValidCalendarDate(date: string) {
 }
 
 function isTodayOrEarlier(date: string): boolean {
-  const today = new Date();
-
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
-
-  const todayString = `${year}-${month}-${day}`;
-
-  return date <= todayString;
+  return date <= getTodayDate();
 }
 
 function isAllowedCategory(
@@ -49,8 +44,11 @@ export function isTransaction(value: unknown): value is Transaction {
 
   const isDescriptionValid = typeof value.description === "string";
 
+  // Previously saved transactions must remain valid if the system clock changes.
   const isDateValid =
-    typeof value.date === "string" && isValidTransactionDate(value.date);
+    typeof value.date === "string" &&
+    DATE_PATTERN.test(value.date) &&
+    isValidCalendarDate(value.date);
 
   const isTypeValid = value.type === "income" || value.type === "expense";
 
@@ -74,10 +72,8 @@ export function isTransaction(value: unknown): value is Transaction {
 }
 
 export function isValidTransactionDate(date: string): boolean {
-  const datePattern = /^\d{4}-\d{2}-\d{2}$/;
-
   return (
-    datePattern.test(date) &&
+    DATE_PATTERN.test(date) &&
     isValidCalendarDate(date) &&
     isTodayOrEarlier(date)
   );

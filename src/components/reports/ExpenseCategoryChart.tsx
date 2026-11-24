@@ -10,6 +10,7 @@ import {
 } from "recharts";
 
 import { formatCurrency } from "../../utils/currency";
+import { EXPENSE_CATEGORIES } from "../../constants/categories";
 
 interface ExpenseCategoryChartProps {
   data: ExpenseCategoryDataPoint[];
@@ -25,6 +26,13 @@ const CATEGORY_COLORS = [
   "#0891b2",
   "#64748b",
 ];
+
+const CATEGORY_COLOR_MAP = new Map<string, string>(
+  EXPENSE_CATEGORIES.map((category, index) => [
+    category,
+    CATEGORY_COLORS[index % CATEGORY_COLORS.length],
+  ] as const),
+);
 
 function ExpenseCategoryChart({ data }: ExpenseCategoryChartProps) {
   return (
@@ -48,7 +56,7 @@ function ExpenseCategoryChart({ data }: ExpenseCategoryChartProps) {
             </p>
           </div>
         ) : (
-          <div className="h-80 w-full">
+          <div className="h-96 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -61,10 +69,10 @@ function ExpenseCategoryChart({ data }: ExpenseCategoryChartProps) {
                   outerRadius={90}
                   paddingAngle={2}
                 >
-                  {data.map((entry, index) => (
+                  {data.map((entry) => (
                     <Cell
                       key={entry.category}
-                      fill={CATEGORY_COLORS[index % CATEGORY_COLORS.length]}
+                      fill={CATEGORY_COLOR_MAP.get(entry.category) ?? "#64748b"}
                     />
                   ))}
                 </Pie>
@@ -75,7 +83,7 @@ function ExpenseCategoryChart({ data }: ExpenseCategoryChartProps) {
                   }
                 />
 
-                <Legend />
+                <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 12 }} />
               </PieChart>
             </ResponsiveContainer>
           </div>

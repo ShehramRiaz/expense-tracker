@@ -6,7 +6,8 @@ import {
 } from "../utils/reportPeriod";
 import useTransactions from "../hooks/useTransactions";
 import { formatCurrency } from "../utils/currency";
-import SummaryCard from "../components/SummaryCard";
+import { calculateTransactionTotals } from "../utils/transactionTotals";
+import SummaryCard from "../components/shared/SummaryCard";
 import {
   getDailyChartData,
   getMonthlyChartData,
@@ -28,21 +29,8 @@ function ReportsPage() {
     return transaction.date.startsWith(`${selectedPeriod}-`);
   });
 
-  const totalIncomeCents = filteredTransactions.reduce((acc, curr) => {
-    if (curr.type === "income") {
-      return acc + curr.amountCents;
-    }
-    return acc;
-  }, 0);
-
-  const totalExpenseCents = filteredTransactions.reduce((acc, curr) => {
-    if (curr.type === "expense") {
-      return acc + curr.amountCents;
-    }
-    return acc;
-  }, 0);
-
-  const netBalanceCents = totalIncomeCents - totalExpenseCents;
+  const { incomeCents, expenseCents, balanceCents } =
+    calculateTransactionTotals(filteredTransactions);
 
   const chartData =
     selectedPeriod === "all"
@@ -99,18 +87,18 @@ function ReportsPage() {
       >
         <SummaryCard
           title="Net Balance"
-          amount={formatCurrency(netBalanceCents)}
+          amount={formatCurrency(balanceCents)}
           variant="neutral"
-          isNegative={netBalanceCents < 0}
+          isNegative={balanceCents < 0}
         />
         <SummaryCard
           title="Total Income"
-          amount={formatCurrency(totalIncomeCents)}
+          amount={formatCurrency(incomeCents)}
           variant="income"
         />
         <SummaryCard
           title="Total Expenses"
-          amount={formatCurrency(totalExpenseCents)}
+          amount={formatCurrency(expenseCents)}
           variant="expense"
         />
       </section>

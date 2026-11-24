@@ -21,6 +21,9 @@ function IncomeExpenseChart({
   data,
   hasTransactions,
 }: IncomeExpenseChartProps) {
+  const monthlyLabels = data.some((point) => point.label.length > 2);
+  const minimumChartWidth = Math.max(700, data.length * (monthlyLabels ? 100 : 32));
+
   return (
     <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-5">
       <h2 className="text-lg font-semibold text-slate-900">
@@ -47,7 +50,7 @@ function IncomeExpenseChart({
             aria-label="Income and expenses chart"
             tabIndex={0}
           >
-            <div className="h-80 min-w-[700px]">
+            <div className="h-80" style={{ minWidth: minimumChartWidth }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={data}

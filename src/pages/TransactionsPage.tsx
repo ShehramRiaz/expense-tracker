@@ -4,16 +4,12 @@ import TransactionList from "../components/transactions/TransactionList";
 import useTransactions from "../hooks/useTransactions";
 import TransactionFilters from "../components/transactions/TransactionFilters";
 import type { Transaction } from "../types/transaction";
+import type { AppOutletContext } from "../types/app";
 import type {
   TransactionTypeFilter,
   TransactionSortOrder,
 } from "../types/transactionFilters";
 import TransactionEmptyState from "../components/transactions/TransactionEmptyState";
-
-interface TransactionModalOutletContext {
-  openTransactionModal: () => void;
-  openEditTransactionModal: (transaction: Transaction) => void;
-}
 
 function TransactionsPage() {
   const { transactions, deleteTransaction } = useTransactions();
@@ -22,7 +18,7 @@ function TransactionsPage() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortOrder, setSortOrder] = useState<TransactionSortOrder>("newest");
   const { openEditTransactionModal, openTransactionModal } =
-    useOutletContext<TransactionModalOutletContext>();
+    useOutletContext<AppOutletContext>();
 
   const normalizedQuery = searchQuery.trim().toLowerCase();
 

@@ -1,7 +1,7 @@
 import { Link } from "react-router";
-import type { Transaction } from "../types/transaction";
-import { formatCurrency } from "../utils/currency";
-import { formatDate } from "../utils/formatDate";
+import type { Transaction } from "../../types/transaction";
+import { formatCurrency } from "../../utils/currency";
+import { formatDate } from "../../utils/formatDate";
 
 interface RecentTransactionsProps {
   transactions: Transaction[];
@@ -38,7 +38,7 @@ function RecentTransactions({ transactions }: RecentTransactionsProps) {
             return (
               <li
                 key={transaction.id}
-                className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-slate-50"
+                className="flex flex-col items-start gap-2 px-5 py-4 hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
                 <div className="min-w-0 flex-1">
                   <p className="wrap-break-word text-sm font-medium text-slate-900">
@@ -52,7 +52,7 @@ function RecentTransactions({ transactions }: RecentTransactionsProps) {
                 </div>
 
                 <p
-                  className={`shrink-0 text-right text-sm font-semibold tabular-nums ${
+                  className={`max-w-full break-all text-sm font-semibold tabular-nums sm:shrink-0 sm:text-right sm:break-normal ${
                     isIncome ? "text-green-700" : "text-red-600"
                   }`}
                 >

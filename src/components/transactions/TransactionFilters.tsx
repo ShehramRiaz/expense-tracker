@@ -39,7 +39,7 @@ function TransactionFilters({
         : [...new Set([...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES])];
 
   return (
-    <div className="mt-4">
+    <div>
       <label
         htmlFor="transaction-search"
         className="block text-sm font-medium text-slate-700"

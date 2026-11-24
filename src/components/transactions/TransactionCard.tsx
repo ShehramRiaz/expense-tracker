@@ -17,7 +17,7 @@ function TransactionCard({
 
   return (
     <li className="rounded-lg border border-slate-200 bg-white p-4">
-      <div className="flex justify-between gap-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:gap-3">
         <div className="min-w-0 flex-1">
           {transaction.description && (
             <p className="wrap-break-word font-medium text-slate-900">
@@ -39,7 +39,7 @@ function TransactionCard({
         </div>
 
         <p
-          className={`shrink-0 text-right font-semibold tabular-nums ${
+          className={`max-w-full break-all font-semibold tabular-nums sm:shrink-0 sm:text-right sm:break-normal ${
             isIncome ? "text-green-700" : "text-red-600"
           }`}
         >

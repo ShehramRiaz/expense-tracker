@@ -2,31 +2,25 @@ import { useOutletContext } from "react-router";
 
 import type { AppOutletContext } from "../types/app";
 
-import RecentTransactions from "../components/RecentTransactions";
-import SummaryCard from "../components/SummaryCard";
+import RecentTransactions from "../components/dashboard/RecentTransactions";
+import SummaryCard from "../components/shared/SummaryCard";
 import useTransactions from "../hooks/useTransactions";
 import { formatCurrency } from "../utils/currency";
+import { calculateTransactionTotals } from "../utils/transactionTotals";
 
 function DashboardPage() {
   const { openTransactionModal } = useOutletContext<AppOutletContext>();
   const { transactions } = useTransactions();
 
-  const totalIncomeCents = transactions.reduce((acc, curr) => {
-    return curr.type === "income" ? acc + curr.amountCents : acc;
-  }, 0);
-
-  const totalExpenseCents = transactions.reduce((acc, curr) => {
-    return curr.type === "expense" ? acc + curr.amountCents : acc;
-  }, 0);
-
-  const balanceCents = totalIncomeCents - totalExpenseCents;
+  const { incomeCents, expenseCents, balanceCents } =
+    calculateTransactionTotals(transactions);
 
   const recentTransactions = [...transactions]
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(0, 5);
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-6 lg:px-8 lg:py-8">
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
@@ -56,12 +50,12 @@ function DashboardPage() {
         />
         <SummaryCard
           title="Total Income"
-          amount={formatCurrency(totalIncomeCents)}
+          amount={formatCurrency(incomeCents)}
           variant="income"
         />
         <SummaryCard
           title="Total Expenses"
-          amount={formatCurrency(totalExpenseCents)}
+          amount={formatCurrency(expenseCents)}
           variant="expense"
         />
       </section>
