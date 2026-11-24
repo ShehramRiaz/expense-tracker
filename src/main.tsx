@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router";
+import { HashRouter } from "react-router";
 
 import TransactionProvider from "./context/TransactionProvider";
 
@@ -9,10 +9,10 @@ import App from "./App.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
+    <HashRouter>
       <TransactionProvider>
         <App />
       </TransactionProvider>
-    </BrowserRouter>
+    </HashRouter>
   </StrictMode>,
 );
